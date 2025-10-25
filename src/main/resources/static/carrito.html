@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        .page-title {
+            color: #343a40;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-info {
+            padding-left: 20px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-code {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 5px;
+        }
+
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .subtotal {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #28a745;
+            margin: 20px 0;
+        }
+
+        .checkout-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .continue-shopping {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .continue-shopping:hover {
+            background: #545b62;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-cart-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .cart-badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                text-align: center;
+            }
+
+            .product-info {
+                padding-left: 0;
+                margin: 15px 0;
+            }
+
+            .quantity-controls {
+                justify-content: center;
+                margin: 15px 0;
+            }
+
+            .price,
+            .subtotal {
+                margin: 10px 0;
+            }
+        }
+
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 9999;
+            /* Asegúrate de que esté sobre otros elementos */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand font-weight-bold" href="#">
+                <i class="fas fa-shopping-bag mr-2"></i>MiTienda
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link text-white" href="index.html">
+                    <i class="fas fa-store mr-1"></i>Catálogo
+                </a>
+                <a class="nav-link text-white font-weight-bold" href="#">
+                    <i class="fas fa-shopping-cart mr-1"></i>Carrito
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">
+            <i class="fas fa-shopping-cart mr-2"></i>Mi Carrito de Compras
+        </h1>
+
+        <div class="row">
+            <!-- Lista de productos en el carrito -->
+            <div class="col-lg-8">
+                <div id="cart-items-container">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Cargando carrito...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen del pedido -->
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h3 class="summary-title">Resumen del Pedido</h3>
+
+                    <div class="summary-item">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Envío:</span>
+                        <span id="shipping">Gratis</span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Descuento:</span>
+                        <span id="discount">$0.00</span>
+                    </div>
+
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+
+                    <div class="payment-methods mt-4">
+                        <h4>Método de Pago</h4>
+                        <form id="payment-form">
+                            <!-- Opción Efectivo -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="cash" name="payment-method"
+                                    value="cash" checked>
+                                <label class="form-check-label" for="cash">
+                                    <i class="fas fa-money-bill mr-2"></i> Efectivo
+                                </label>
+                            </div>
+
+                            <!-- Opción Tarjeta de Crédito -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="credit-card" name="payment-method"
+                                    value="credit-card">
+                                <label class="form-check-label" for="credit-card">
+                                    <i class="fas fa-credit-card mr-2"></i> Tarjeta de Crédito
+                                </label>
+                            </div>
+
+                            <!-- Opción Tarjeta Débito -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="debit-card" name="payment-method"
+                                    value="debit-card">
+                                <label class="form-check-label" for="debit-card">
+                                    <i class="fas fa-credit-card mr-2"></i> Tarjeta de Débito
+                                </label>
+                            </div>
+
+                            <!-- Opción PayPal -->
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="paypal" name="payment-method"
+                                    value="paypal">
+                                <label class="form-check-label" for="paypal">
+                                    <i class="fab fa-cc-paypal mr-2"></i> PayPal
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <button class="checkout-btn" id="checkout-btn">
+                        <i class="fas fa-credit-card mr-2"></i>Proceder al Pago
+                    </button>
+
+                    <button class="continue-shopping" onclick="window.location.href='index.html'">
+                        <i class="fas fa-arrow-left mr-2"></i>Seguir Comprando
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-danger btn-sm" id="clear-cart-btn">
+                            <i class="fas fa-trash mr-1"></i>Vaciar Carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="loading-indicator" style="display: none;" class="text-center">
+        <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+        <p>Procesando...</p>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Variable global para almacenar el carrito
+        let carritoActual = { items: [] };
+
+        // Cargar carrito al iniciar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarCarrito();
+        });
+
+        // Función para cargar el carrito desde la API
+        function cargarCarrito() {
+            fetch('http://localhost:8080/api/carrito', {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include' // Importante para mantener la sesión
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar el carrito');
+                    }
+                    return response.json();
+                })
+                .then(carrito => {
+                    carritoActual.items = carrito;
+                    actualizarVistaCarrito();
+                    actualizarContadorCarrito();
+                })
+        }
+
+        // Función para actualizar la vista del carrito
+        function actualizarVistaCarrito() {
+            const container = document.getElementById('cart-items-container');
+            const items = carritoActual.items;
+
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h3>Tu carrito está vacío</h3>
+                        <p class="text-muted">Agrega algunos productos desde nuestro catálogo</p>
+                        <button class="btn btn-primary mt-3" onclick="window.location.href='index.html'">
+                            <i class="fas fa-store mr-2"></i>Ir al Catálogo
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                const producto = item.producto;
+                const subtotal = producto.precio * item.cantidad;
+
+                html += `
+                    <div class="cart-item" data-product-id="${producto.idProducto}">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <img src="/${producto.imagen || 'default-product.jpg'}" 
+                                     alt="${producto.nombre}" 
+                                     class="product-image"
+                                     onerror="this.src='https://via.placeholder.com/100x100?text=Imagen'">
+                            </div>
+                            <div class="col-md-4 product-info">
+                                <div class="product-name">${producto.nombre}</div>
+                                <div class="product-code">Código: ${producto.codigo}</div>
+                                <div class="price">$${producto.precio.toFixed(2)}</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="actualizarCantidad(${producto.idProducto}, ${item.cantidad - 1})">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" 
+                                           class="quantity-input" 
+                                           value="${item.cantidad}" 
+                                           min="1" 
+                                           onchange="actualizarCantidad(${producto.idProducto}, parseInt(this.value))">
+                                    <button class="quantity-btn" onclick="actualizarCantidad(${producto.idProducto}, ${item.cantidad + 1})">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="subtotal">$${subtotal.toFixed(2)}</div>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <button class="remove-btn" onclick="eliminarProducto(${producto.idProducto})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            actualizarResumen();
+        }
+
+        // Función para actualizar el resumen del pedido
+        function actualizarResumen() {
+            const subtotal = carritoActual.calcularTotal ? carritoActual.calcularTotal() : calcularTotalManual();
+            const total = subtotal;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Función auxiliar para calcular el total manualmente
+        function calcularTotalManual() {
+            let total = 0;
+            if (carritoActual.items) {
+                carritoActual.items.forEach(item => {
+                    total += item.producto.precio * item.cantidad;
+                });
+            }
+            return total;
+        }
+
+        // Función para actualizar la cantidad de un producto
+        function actualizarCantidad(productId, nuevaCantidad) {
+            if (nuevaCantidad < 1) {
+                eliminarProducto(productId);
+                return;
+            }
+
+            fetch('http://localhost:8080/api/carrito/actualizar-cantidad', {
+                method: 'PATCH',
+                mode: "cors",
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    idProducto: productId,
+                    cantidad: nuevaCantidad
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud: ' + response.statusText);
+                    }
+                    cargarCarrito();
+                    actualizarVistaCarrito();
+                    actualizarContadorCarrito();
+                });
+        }
+
+        // Función para eliminar un producto del carrito
+        async function eliminarProducto(productId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/carrito/eliminar/${productId}`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    mode: 'cors'
+                });
+
+                if (!response.ok && response.status !== 204) {
+                    throw new Error(`Error al eliminar producto: ${response.statusText}`);
+                }
+
+                // Si cargarCarrito devuelve una promesa, esperamos a que termine
+                await cargarCarrito();
+
+                // Actualizamos la UI
+                actualizarVistaCarrito();
+                actualizarContadorCarrito();
+                actualizarResumen();
+
+            } catch (error) {
+                console.error('Error al eliminar producto:', error);
+                mostrarMensajeError('No se pudo eliminar el producto. Intenta nuevamente.');
+            }
+        }
+
+
+        // Función para vaciar el carrito
+        document.getElementById('clear-cart-btn').addEventListener('click', async function () {
+            if (!confirm('¿Estás seguro de que quieres vaciar el carrito?')) return;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/carrito/vaciar', {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    mode: 'cors'
+                });
+
+                // Verificamos que la respuesta sea correcta (204 o cualquier 2xx)
+                if (!response.ok && response.status !== 204) {
+                    throw new Error(`Error al vaciar el carrito: ${response.statusText}`);
+                }
+
+                // Como el backend devuelve 204 No Content, simplemente limpiamos el estado local
+                carritoActual = [];
+                actualizarVistaCarrito();
+                actualizarContadorCarrito();
+                actualizarResumen();
+
+            } catch (error) {
+                console.error('Error al vaciar el carrito:', error);
+                mostrarMensajeError('Error al vaciar el carrito');
+            }
+        });
+
+
+        // Función para actualizar el contador del carrito en el navbar
+        function actualizarContadorCarrito() {
+            const badge = document.getElementById('cart-badge');
+            const totalItems = carritoActual.items ?
+                carritoActual.items.reduce((total, item) => total + item.cantidad, 0) : 0;
+
+            badge.textContent = totalItems;
+
+            // Ocultar badge si no hay items
+            if (totalItems === 0) {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'inline';
+            }
+        }
+
+        // Función para mostrar mensajes de éxito
+        function mostrarMensajeExito(mensaje) {
+            // Puedes implementar toast o alert personalizado
+            alert('✅ ' + mensaje);
+        }
+
+        // Función para mostrar mensajes de error
+        function mostrarMensajeError(mensaje) {
+            // Puedes implementar toast o alert personalizado
+            alert('❌ ' + mensaje);
+        }
+
+        //Pagos
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkoutBtn = document.getElementById("checkout-btn");
+
+            checkoutBtn.addEventListener("click", function () {
+                // Obtener el tipo de pago seleccionado
+                const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+                // Obtener el monto total
+                const totalAmount = parseFloat(document.getElementById("total").textContent.replace('$', '').trim());
+
+                if (isNaN(totalAmount) || totalAmount <= 0) {
+                    alert("El monto total no es válido. Por favor, revise su carrito.");
+                    return;
+                }
+
+                // Realizar la solicitud POST al backend
+                realizarPago(selectedPaymentMethod, totalAmount);
+            });
+
+            function realizarPago(tipoPago, monto) {
+                const loadingIndicator = document.getElementById("loading-indicator");
+
+                // Mostrar el loader mientras se espera la respuesta del API
+                loadingIndicator.style.display = "block";
+
+                // Construir la URL del endpoint
+                const url = `http://localhost:8080/api/pagos/${tipoPago}/${monto}`;
+
+                // Hacer la solicitud POST usando Fetch API
+                fetch(url, {
+                    method: 'POST',
+                    credentials: 'include',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(response => {
+                        // Verificar si la respuesta es exitosa (status 200-299)
+                        if (!response.ok) {
+                            throw new Error("Error en el pago. Código de estado: " + response.status);
+                        }
+                        return response.text(); // Asumimos que la respuesta es JSON
+                    })
+                    .then(data => {
+                        loadingIndicator.style.display = "none";
+
+                        alert("Pago exitoso: " + data);
+                        vaciarCarrito();
+                    })
+                    .catch(error => {
+                        // Si ocurrió un error en la solicitud
+                        console.error("Hubo un error al procesar el pago:", error);
+                        alert("Hubo un problema con el pago: " + error.message);
+                    });
+            }
+        });
+
+        // Función para vaciar el carrito sin preguntar confirmación
+        async function vaciarCarrito() {
+            try {
+                const response = await fetch('http://localhost:8080/api/carrito/vaciar', {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    mode: 'cors'
+                });
+
+                // Verificamos que la respuesta sea correcta (204 o cualquier 2xx)
+                if (!response.ok && response.status !== 204) {
+                    throw new Error(`Error al vaciar el carrito: ${response.statusText}`);
+                }
+
+                // Limpiar el carrito local
+                carritoActual = [];
+                actualizarVistaCarrito();
+                actualizarContadorCarrito();
+                actualizarResumen();
+
+            } catch (error) {
+                console.error('Error al vaciar el carrito:', error);
+                mostrarMensajeError('Error al vaciar el carrito');
+            }
+        }
+
+    </script>
+</body>
+
+</html>

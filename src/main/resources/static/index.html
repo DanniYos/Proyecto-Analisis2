@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos</title>
+
+    <!-- Vinculación a Bootstrap para estilos -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Estilos adicionales -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #343a40;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image-container {
+            height: 320px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-body {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.3;
+            min-height: 70px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-code {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #28a745;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-add-cart:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 60px;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #dc3545;
+            padding: 50px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-catalog {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+        }
+
+        .empty-catalog i {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            color: #dee2e6;
+        }
+
+        .catalog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box {
+            max-width: 350px;
+        }
+
+        .product-count {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .catalog-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-box {
+                margin-top: 20px;
+                max-width: 100%;
+            }
+
+            .product-card {
+                margin-bottom: 25px;
+            }
+
+            .product-image-container {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-image-container {
+                height: 250px;
+            }
+
+            .product-title {
+                font-size: 1.3rem;
+                min-height: 60px;
+            }
+
+            .product-price {
+                font-size: 1.6rem;
+            }
+
+            .btn-add-cart {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Efecto de carga para imágenes */
+        .image-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        .cart-badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- En el navbar de tu catálogo -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand font-weight-bold" href="#">
+                <i class="fas fa-shopping-bag mr-2"></i>MiTienda
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link text-white font-weight-bold" href="/index.html">
+                    <i class="fas fa-store mr-1"></i>Catálogo
+                </a>
+                <a class="nav-link text-white" href="carrito.html">
+                    <i class="fas fa-shopping-cart mr-1"></i>Carrito
+                    <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Catálogo de Productos</h1>
+
+        <div class="catalog-header">
+            <div>
+                <span class="product-count" id="product-count">Cargando...</span>
+            </div>
+            <div class="search-box">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="search-input"
+                        placeholder="Buscar productos por nombre o código...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor del catálogo -->
+        <div class="row" id="catalogo-productos">
+            <!-- Los productos se agregarán dinámicamente aquí con JavaScript -->
+            <div class="col-12">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Cargando productos...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts necesarios -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Script de JavaScript para cargar los productos -->
+    <script>
+        window.onload = function () {
+            const catalogoProductos = document.getElementById('catalogo-productos');
+            const productCount = document.getElementById('product-count');
+            const searchInput = document.getElementById('search-input');
+            let productosData = [];
+
+            fetch('http://localhost:8080/productos', {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    console.log('Status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    productosData = data;
+                    actualizarContadorInicial();
+                    // Actualizar contador
+                    productCount.textContent = `${data.length} Productos`;
+
+                    // Renderizar productos
+                    renderProductos(data);
+                })
+                .catch(error => {
+                    console.error('Error completo:', error);
+                    catalogoProductos.innerHTML = `
+                    <div class="col-12">
+                        <div class="error-message">
+                            <h4><i class="fas fa-exclamation-triangle mr-2"></i>Error al cargar los productos</h4>
+                            <p class="mt-3">${error.message}</p>
+                            <button class="btn btn-primary mt-4" onclick="location.reload()">
+                                <i class="fas fa-redo mr-2"></i>Reintentar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                });
+
+            // Función para renderizar productos
+            function renderProductos(productos) {
+                // Limpiar el mensaje de carga
+                catalogoProductos.innerHTML = '';
+
+                // Verificar si hay datos
+                if (!productos || productos.length === 0) {
+                    catalogoProductos.innerHTML = `
+                        <div class="col-12">
+                            <div class="empty-catalog">
+                                <i class="fas fa-box-open"></i>
+                                <h3>No hay productos disponibles</h3>
+                                <p>Intenta más tarde o contacta al administrador.</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Renderizar cada producto
+                productos.forEach(producto => {
+                    // Manejar imagen (por si viene null o undefined)
+                    const imagenUrl = producto.imagen ? `/${producto.imagen}` : 'https://via.placeholder.com/400x320/ffffff/cccccc?text=Sin+Imagen';
+                    const imagenAlt = producto.nombre || 'Producto sin nombre';
+
+                    const col = document.createElement('div');
+                    col.className = 'col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4';
+
+                    col.innerHTML = `
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="${imagenUrl}" alt="${imagenAlt}" class="product-image image-loading" 
+                                     onload="this.classList.remove('image-loading')"
+                                     onerror="this.src='https://via.placeholder.com/400x320/ffffff/cccccc?text=Imagen+No+Disponible'">
+                            </div>
+                            <div class="product-body">
+                                <h5 class="product-title">${producto.nombre || 'Producto sin nombre'}</h5>
+                                <div class="product-code">
+                                    <i class="fas fa-barcode mr-2"></i>Código: ${producto.codigo || 'N/A'}
+                                </div>
+                                <div class="product-price">$${producto.precio ? producto.precio.toFixed(2) : '0.00'}</div>
+                                <div class="product-footer">
+                                    <button class="btn-add-cart" onclick="agregarAlCarrito(${JSON.stringify(producto).replace(/"/g, '&quot;')})">
+                                        <i class="fas fa-cart-plus mr-2"></i>Agregar al Carrito
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    catalogoProductos.appendChild(col);
+                });
+            }
+
+            // Función de búsqueda
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+
+                if (searchTerm === '') {
+                    renderProductos(productosData);
+                    productCount.textContent = `${productosData.length} Productos`;
+                } else {
+                    const filteredProducts = productosData.filter(producto => {
+                        return (
+                            (producto.nombre && producto.nombre.toLowerCase().includes(searchTerm)) ||
+                            (producto.codigo && producto.codigo.toLowerCase().includes(searchTerm))
+                        );
+                    });
+
+                    renderProductos(filteredProducts);
+                    productCount.textContent = `${filteredProducts.length} Productos encontrados`;
+                }
+            });
+        };
+
+
+
+        async function agregarAlCarrito(producto) {
+            try {
+                const response = await fetch('http://localhost:8080/api/carrito/agregar', {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(producto)
+                });
+
+                // Verificamos si la respuesta es exitosa (2xx o 204)
+                if (!response.ok && response.status !== 204) {
+                    throw new Error(`Error al agregar producto: ${response.statusText}`);
+                }
+
+                // No intentamos leer el cuerpo porque es 204 No Content
+
+                actualizarContadorInicial();
+                console.log('Producto agregado correctamente');
+                alert('✅ Producto agregado al carrito');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al agregar el producto');
+            }
+        }
+
+
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje) {
+            // Crear elemento de notificación
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;`;
+            notificacion.textContent = mensaje;
+
+            document.body.appendChild(notificacion);
+
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+
+        // Función para actualizar el contador del carrito en el navbar
+        function actualizarContadorCarrito(carrito) {
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                // Sumar la cantidad de productos en el carrito
+                const totalItems = carrito && Array.isArray(carrito) ?
+                    carrito.reduce((total, item) => total + item.cantidad, 0) : 0;
+
+                // Mostrar la cantidad total en el badge
+                badge.textContent = totalItems;
+
+                // Mostrar u ocultar el badge según la cantidad
+                if (totalItems === 0) {
+                    badge.style.display = 'none';
+                } else {
+                    badge.style.display = 'inline';
+                }
+            }
+        }
+
+        // Función para obtener y actualizar el contador del carrito al cargar la página
+        function actualizarContadorInicial() {
+            fetch('http://localhost:8080/api/carrito', {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(carrito => {
+                    actualizarContadorCarrito(carrito);
+                })
+                .catch(error => {
+                    console.error('Error al cargar carrito:', error);
+                });
+        }
+
+
+    </script>
+</body>
+
+</html>
